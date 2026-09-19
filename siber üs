@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siber Üs — Sıfırdan Siber Güvenlik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#101B24;
+  --surface-dark:#16232F;
+  --surface-dark-2:#1D2C3A;
+  --paper:#F3F5F3;
+  --paper-2:#E6EAE7;
+  --line:#C9D2CC;
+  --line-strong:#9DA9A3;
+  --text:#101B24;
+  --text-muted:#4A585F;
+  --text-on-dark:#EDF1EE;
+  --text-on-dark-muted:#9FB0AA;
+  --signal:#2FAE76;
+  --signal-soft:#E3F3EA;
+  --amber:#C98A22;
+  --amber-soft:#F6ECD8;
+  --danger:#B4402A;
+  --danger-soft:#F5E2DC;
+  --radius:3px;
+  --mono:'IBM Plex Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+  --sans:'IBM Plex Sans', -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#EDF1EE;
+    --paper:#0F171D;
+    --paper-2:#182229;
+    --line:#2B3841;
+    --line-strong:#455158;
+    --text:#EDF1EE;
+    --text-muted:#9FB0AA;
+    --surface-dark:#0B1116;
+    --surface-dark-2:#131C22;
+    --signal-soft:#173226;
+    --amber-soft:#332608;
+    --danger-soft:#331611;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#EDF1EE;
+  --paper:#0F171D;
+  --paper-2:#182229;
+  --line:#2B3841;
+  --line-strong:#455158;
+  --text:#EDF1EE;
+  --text-muted:#9FB0AA;
+  --surface-dark:#0B1116;
+  --surface-dark-2:#131C22;
+  --signal-soft:#173226;
+  --amber-soft:#332608;
+  --danger-soft:#331611;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper);
+  color:var(--text);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+img,svg{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;}
+a{color:inherit;}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
+.hide{display:none !important;}
+
+/* ---------- NAV ---------- */
+header.site{
+  position:sticky;top:0;z-index:50;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;max-width:1120px;margin:0 auto;
+}
+.logo{
+  font-family:var(--mono);font-weight:600;font-size:16px;letter-spacing:0.02em;
+  display:flex;align-items:center;gap:8px;
+}
+.logo .dot{width:8px;height:8px;border-radius:50%;background:var(--signal);display:inline-block;}
+nav.links{display:flex;gap:22px;font-family:var(--mono);font-size:13.5px;flex-wrap:wrap;}
+nav.links button{
+  background:none;border:none;color:var(--text-muted);padding:6px 0;
+  border-bottom:2px solid transparent;font-size:13.5px;
+}
+nav.links button.active{color:var(--text);border-bottom-color:var(--signal);}
+.burger{display:none;background:none;border:1px solid var(--line);padding:8px 10px;border-radius:var(--radius);}
+.burger span{display:block;width:18px;height:2px;background:var(--text);margin:4px 0;}
+@media (max-width:760px){
+  nav.links{
+    position:absolute;top:64px;left:0;right:0;background:var(--paper);
+    flex-direction:column;gap:0;border-bottom:1px solid var(--line);
+    max-height:0;overflow:hidden;transition:max-height .25s ease;
+  }
+  nav.links.open{max-height:260px;}
+  nav.links button{padding:14px 24px;border-bottom:1px solid var(--line);width:100%;text-align:left;border-left:2px solid transparent;}
+  nav.links button.active{border-left-color:var(--signal);border-bottom-color:var(--line);}
+  .burger{display:block;}
+}
+
+/* ---------- HERO ---------- */
+.hero{padding:72px 0 56px;border-bottom:1px solid var(--line);}
+.hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:56px;align-items:center;}
+@media (max-width:860px){.hero-grid{grid-template-columns:1fr;gap:36px;}}
+.eyebrow-line{
+  font-family:var(--mono);font-size:13px;color:var(--text-muted);
+  margin:0 0 18px;display:flex;align-items:center;gap:10px;
+}
+.eyebrow-line .dot{width:6px;height:6px;background:var(--signal);border-radius:50%;}
+h1.hero-title{
+  font-family:var(--mono);font-weight:600;font-size:clamp(32px,5vw,52px);
+  line-height:1.08;letter-spacing:-0.01em;margin:0 0 22px;max-width:14ch;
+}
+.hero p.lead{font-size:18px;color:var(--text-muted);max-width:42ch;margin:0 0 30px;}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;}
+.btn{
+  font-family:var(--mono);font-size:14px;padding:13px 22px;border-radius:var(--radius);
+  border:1px solid var(--ink);background:var(--ink);color:var(--paper);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn.secondary{background:transparent;color:var(--text);border:1px solid var(--line-strong);}
+.btn:hover{opacity:.88;}
+.hero-art{width:100%;}
+
+/* principles strip */
+.principles{border-bottom:1px solid var(--line);}
+.principles .wrap{display:grid;grid-template-columns:repeat(3,1fr);}
+@media (max-width:760px){.principles .wrap{grid-template-columns:1fr;}}
+.principle{
+  padding:34px 26px;border-left:1px solid var(--line);
+}
+.principle:first-child{border-left:none;}
+@media (max-width:760px){
+  .principle{border-left:none;border-top:1px solid var(--line);}
+  .principle:first-child{border-top:none;}
+}
+.principle svg{width:26px;height:26px;color:var(--signal);margin-bottom:14px;}
+.principle h3{font-family:var(--mono);font-size:15px;margin:0 0 8px;font-weight:600;}
+.principle p{color:var(--text-muted);font-size:14.5px;margin:0;max-width:32ch;}
+
+/* ---------- SECTION HEADERS ---------- */
+.section{padding:64px 0;}
+.section-head{margin-bottom:40px;}
+.section-head h2{
+  font-family:var(--mono);font-size:clamp(22px,3vw,30px);font-weight:600;margin:0 0 10px;
+}
+.section-head p{color:var(--text-muted);max-width:50ch;margin:0;font-size:15.5px;}
+
+/* ---------- MODULE PATH ---------- */
+.path{position:relative;}
+.path-line{
+  position:absolute;left:23px;top:14px;bottom:14px;width:1px;background:var(--line);
+}
+@media (max-width:600px){.path-line{left:19px;}}
+.path-item{
+  position:relative;display:flex;gap:22px;padding:0 0 34px;
+}
+.path-item:last-child{padding-bottom:0;}
+.node{
+  position:relative;z-index:1;flex:0 0 auto;width:48px;height:48px;border-radius:50%;
+  border:1px solid var(--line-strong);background:var(--paper);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:13px;color:var(--text-muted);
+}
+@media (max-width:600px){.node{width:40px;height:40px;font-size:11.5px;}}
+.node.done{background:var(--signal);border-color:var(--signal);color:#fff;}
+.path-item.card{
+  flex:1;border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px 24px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+  background:var(--paper);transition:border-color .15s ease;
+}
+.path-item.card:hover{border-color:var(--line-strong);}
+.card-main{display:flex;gap:16px;align-items:flex-start;}
+.card-main svg{width:22px;height:22px;color:var(--text-muted);flex:0 0 auto;margin-top:2px;}
+.card-main h3{font-family:var(--mono);font-size:16px;margin:0 0 6px;font-weight:600;}
+.card-main p{color:var(--text-muted);font-size:14px;margin:0;max-width:46ch;}
+.card-status{font-family:var(--mono);font-size:12px;color:var(--text-muted);white-space:nowrap;padding-top:4px;}
+.card-status.done{color:var(--signal);}
+.open-btn{
+  font-family:var(--mono);font-size:13px;padding:9px 16px;border:1px solid var(--line-strong);
+  border-radius:var(--radius);background:transparent;flex:0 0 auto;white-space:nowrap;
+}
+.open-btn:hover{background:var(--paper-2);}
+@media (max-width:640px){
+  .path-item.card{flex-direction:column;}
+  .open-btn{align-self:flex-start;}
+}
+
+/* ---------- MODULE DETAIL ---------- */
+.detail-head{display:flex;align-items:center;gap:14px;margin-bottom:30px;flex-wrap:wrap;}
+.back-btn{
+  font-family:var(--mono);font-size:13px;background:none;border:none;color:var(--text-muted);
+  padding:6px 0;display:flex;align-items:center;gap:6px;
+}
+.detail-title-row{display:flex;align-items:center;gap:14px;margin:26px 0 8px;}
+.detail-title-row svg{width:30px;height:30px;color:var(--signal);}
+.detail-title-row h2{font-family:var(--mono);font-size:26px;margin:0;font-weight:600;}
+.detail-num{font-family:var(--mono);color:var(--text-muted);font-size:14px;}
+article.lesson{max-width:68ch;}
+article.lesson p{font-size:16px;margin:0 0 18px;color:var(--text);}
+.keypoints{
+  border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;margin:28px 0 8px;
+  background:var(--paper-2);
+}
+.keypoints h4{font-family:var(--mono);font-size:13px;margin:0 0 12px;color:var(--text-muted);font-weight:600;}
+.keypoints ul{margin:0;padding-left:18px;}
+.keypoints li{margin-bottom:8px;font-size:14.5px;}
+.keypoints li:last-child{margin-bottom:0;}
+
+/* quiz */
+.quiz{margin-top:44px;border-top:1px solid var(--line);padding-top:34px;}
+.quiz h3{font-family:var(--mono);font-size:18px;margin:0 0 4px;}
+.quiz > p.hint{color:var(--text-muted);font-size:14px;margin:0 0 26px;}
+.q-block{margin-bottom:30px;padding-bottom:26px;border-bottom:1px solid var(--line);}
+.q-block:last-of-type{border-bottom:none;}
+.q-prompt{font-weight:600;font-size:15.5px;margin:0 0 14px;}
+.q-options{display:flex;flex-direction:column;gap:10px;}
+.q-option{
+  display:flex;align-items:flex-start;gap:10px;border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px 14px;font-size:14.5px;
+}
+.q-option input{margin-top:3px;accent-color:var(--signal);}
+.q-option.correct{border-color:var(--signal);background:var(--signal-soft);}
+.q-option.wrong{border-color:var(--danger);background:var(--danger-soft);}
+.q-feedback{font-size:13.5px;margin-top:10px;color:var(--text-muted);display:none;}
+.q-feedback.show{display:block;}
+.quiz-actions{display:flex;align-items:center;gap:16px;margin-top:22px;flex-wrap:wrap;}
+.quiz-score{font-family:var(--mono);font-size:13.5px;color:var(--text-muted);}
+.complete-note{
+  margin-top:20px;font-family:var(--mono);font-size:13.5px;color:var(--signal);display:none;
+}
+.complete-note.show{display:block;}
+
+/* ---------- PROGRESS PAGE ---------- */
+.progress-summary{
+  border:1px solid var(--line);border-radius:var(--radius);padding:28px;margin-bottom:36px;
+  display:flex;align-items:center;gap:30px;flex-wrap:wrap;
+}
+.progress-ring{flex:0 0 auto;}
+.progress-num{font-family:var(--mono);font-size:34px;font-weight:600;}
+.progress-label{color:var(--text-muted);font-size:14px;margin-top:4px;}
+.progress-bar-track{flex:1;min-width:180px;height:6px;background:var(--paper-2);border-radius:4px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--signal);width:0%;transition:width .3s ease;}
+.progress-list{border-top:1px solid var(--line);}
+.progress-row{
+  display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line);
+}
+.progress-row .left{display:flex;align-items:center;gap:14px;}
+.progress-row .mark{
+  width:22px;height:22px;border-radius:50%;border:1px solid var(--line-strong);flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;font-size:11px;
+}
+.progress-row .mark.done{background:var(--signal);border-color:var(--signal);color:#fff;}
+.progress-row span.title{font-size:14.5px;}
+.progress-row span.status{font-family:var(--mono);font-size:12.5px;color:var(--text-muted);}
+.reset-row{margin-top:26px;}
+.reset-btn{
+  font-family:var(--mono);font-size:13px;background:none;border:1px solid var(--line-strong);
+  border-radius:var(--radius);padding:9px 16px;color:var(--text-muted);
+}
+.reset-btn:hover{border-color:var(--danger);color:var(--danger);}
+
+/* ---------- SEARCH ---------- */
+.search-row{margin-bottom:32px;}
+.search-row input{
+  width:100%;font-family:var(--mono);font-size:14.5px;padding:13px 16px;
+  border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--text);
+}
+.search-row input:focus{outline:none;border-color:var(--signal);}
+.search-empty{
+  font-family:var(--mono);font-size:14px;color:var(--text-muted);padding:30px 0;text-align:center;
+  border:1px dashed var(--line);border-radius:var(--radius);
+}
+
+/* ---------- BADGES ---------- */
+.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:6px;}
+.badge-card{
+  border:1px solid var(--line);border-radius:var(--radius);padding:18px;
+  display:flex;flex-direction:column;gap:10px;background:var(--paper);
+}
+.badge-card.locked{opacity:.45;}
+.badge-card .badge-icon{
+  width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line-strong);color:var(--text-muted);
+}
+.badge-card.unlocked .badge-icon{background:var(--signal);border-color:var(--signal);color:#fff;}
+.badge-card h4{font-family:var(--mono);font-size:14px;margin:0;font-weight:600;}
+.badge-card p{font-size:13px;color:var(--text-muted);margin:0;}
+
+/* ---------- CERTIFICATE TEASER ---------- */
+.cert-teaser{
+  margin-top:48px;border:1px solid var(--line);border-radius:var(--radius);padding:28px;
+  background:var(--paper-2);
+}
+.cert-teaser h3{font-family:var(--mono);font-size:16px;margin:0 0 8px;}
+.cert-teaser p{color:var(--text-muted);font-size:14px;margin:0 0 18px;max-width:52ch;}
+.cert-form{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.cert-form input{
+  font-family:var(--mono);font-size:14px;padding:11px 14px;border:1px solid var(--line-strong);
+  border-radius:var(--radius);background:var(--paper);color:var(--text);flex:1;min-width:200px;
+}
+.cert-form input:focus{outline:none;border-color:var(--signal);}
+.cert-locked-note{font-family:var(--mono);font-size:13px;color:var(--text-muted);}
+
+/* ---------- CERTIFICATE PAGE ---------- */
+.cert-wrap{max-width:760px;margin:0 auto;}
+.cert-actions{display:flex;gap:14px;margin-bottom:30px;}
+.certificate{
+  border:2px solid var(--ink);border-radius:2px;padding:64px 56px;position:relative;background:var(--paper);
+}
+.certificate::before{
+  content:'';position:absolute;inset:14px;border:1px solid var(--line-strong);pointer-events:none;
+}
+.cert-eyebrow{font-family:var(--mono);font-size:12.5px;color:var(--text-muted);text-align:center;margin:0 0 26px;}
+.cert-heading{font-family:var(--mono);font-size:28px;font-weight:600;text-align:center;margin:0 0 6px;}
+.cert-sub{text-align:center;color:var(--text-muted);font-size:14px;margin:0 0 40px;}
+.cert-name{
+  font-family:var(--mono);font-size:32px;text-align:center;font-weight:600;margin:0 0 8px;
+  border-bottom:1px solid var(--line-strong);padding-bottom:16px;
+}
+.cert-line{text-align:center;color:var(--text-muted);font-size:14px;margin:0 0 44px;}
+.cert-foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:20px;}
+.cert-foot .sig{font-family:var(--mono);font-size:13px;color:var(--text-muted);border-top:1px solid var(--line-strong);padding-top:8px;min-width:160px;text-align:center;}
+.cert-fine{margin-top:34px;font-size:12px;color:var(--text-muted);text-align:center;}
+@media print{
+  header.site, footer.site, .cert-actions, .back-btn{display:none !important;}
+  body{background:#fff;}
+  .certificate{border-color:#000;}
+}
+
+/* ---------- RISK TEST ---------- */
+.risk-intro{max-width:62ch;margin-bottom:34px;}
+.risk-intro p{font-size:15.5px;color:var(--text-muted);margin:0 0 18px;}
+.risk-result{border:1px solid var(--line);border-radius:var(--radius);padding:30px;margin-top:8px;}
+.risk-result-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:18px;}
+.risk-score{font-family:var(--mono);font-size:30px;font-weight:600;}
+.risk-level-tag{font-family:var(--mono);font-size:12.5px;padding:5px 12px;border-radius:20px;display:inline-block;}
+.risk-level-tag.low{background:var(--signal-soft);color:var(--signal);}
+.risk-level-tag.medium{background:var(--amber-soft);color:var(--amber);}
+.risk-level-tag.high{background:var(--danger-soft);color:var(--danger);}
+.risk-gauge-track{height:8px;background:var(--paper-2);border-radius:6px;overflow:hidden;margin:6px 0 24px;}
+.risk-gauge-fill{height:100%;border-radius:6px;transition:width .4s ease;}
+.risk-gauge-fill.low{background:var(--signal);}
+.risk-gauge-fill.medium{background:var(--amber);}
+.risk-gauge-fill.high{background:var(--danger);}
+.risk-result p.summary{font-size:15px;color:var(--text-muted);margin:0 0 24px;max-width:56ch;}
+.weak-list-head{font-family:var(--mono);font-size:13px;color:var(--text-muted);margin:0 0 14px;}
+.risk-actions{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap;}
+
+/* ---------- SCENARIOS ---------- */
+.scenario-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;}
+.scenario-card{
+  border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;gap:12px;
+  text-align:left;background:var(--paper);
+}
+.scenario-card:hover{border-color:var(--line-strong);}
+.scenario-card svg{width:24px;height:24px;color:var(--text-muted);}
+.scenario-card h3{font-family:var(--mono);font-size:15.5px;margin:0;font-weight:600;}
+.scenario-card p{font-size:13.5px;color:var(--text-muted);margin:0;flex:1;}
+.scenario-card .tag{font-family:var(--mono);font-size:11px;color:var(--text-muted);letter-spacing:.02em;}
+.scenario-status{font-family:var(--mono);font-size:12px;color:var(--text-muted);}
+.scenario-status.done{color:var(--signal);}
+
+.mock-email{border:1px solid var(--line-strong);border-radius:var(--radius);overflow:hidden;margin:26px 0;}
+.mock-email .row{padding:10px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12.5px;color:var(--text-muted);}
+.mock-email .row b{color:var(--text);font-weight:600;}
+.mock-email .body{padding:18px 16px;font-size:14.5px;line-height:1.65;}
+.mock-email .fake-link{color:var(--signal);text-decoration:underline;font-family:var(--mono);font-size:13px;}
+
+.mock-call{
+  border:1px solid var(--line-strong);border-radius:var(--radius);padding:20px;margin:26px 0;
+  background:var(--paper-2);display:flex;gap:14px;align-items:flex-start;
+}
+.mock-call svg{width:26px;height:26px;color:var(--text-muted);flex:0 0 auto;margin-top:2px;}
+.mock-call p{margin:0;font-size:14.5px;font-style:italic;}
+
+.mock-generic{border:1px solid var(--line-strong);border-radius:var(--radius);padding:20px;margin:26px 0;background:var(--paper-2);font-size:14.5px;display:flex;gap:14px;}
+.mock-generic svg{width:26px;height:26px;color:var(--text-muted);flex:0 0 auto;margin-top:2px;}
+
+.mock-app{border:1px solid var(--line-strong);border-radius:var(--radius);margin:26px 0;max-width:320px;}
+.mock-app .head{padding:13px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:13px;font-weight:600;}
+.mock-app ul{margin:0;padding:6px 16px;list-style:none;}
+.mock-app li{display:flex;justify-content:space-between;padding:9px 0;font-size:13px;border-bottom:1px solid var(--line);}
+.mock-app li:last-child{border-bottom:none;}
+
+.choice-list{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+.choice-btn{
+  text-align:left;border:1px solid var(--line-strong);border-radius:var(--radius);padding:14px 16px;
+  background:var(--paper);font-size:14.5px;color:var(--text);
+}
+.choice-btn:hover:not(:disabled){background:var(--paper-2);}
+.choice-btn:disabled{opacity:.55;cursor:default;}
+
+.outcome-panel{margin-top:26px;border-radius:var(--radius);padding:20px 22px;border:1px solid var(--line);}
+.outcome-panel.good{border-color:var(--signal);background:var(--signal-soft);}
+.outcome-panel.ok{border-color:var(--amber);background:var(--amber-soft);}
+.outcome-panel.bad{border-color:var(--danger);background:var(--danger-soft);}
+.outcome-tag{font-family:var(--mono);font-size:12px;font-weight:600;margin-bottom:10px;display:block;}
+.outcome-panel.good .outcome-tag{color:var(--signal);}
+.outcome-panel.ok .outcome-tag{color:var(--amber);}
+.outcome-panel.bad .outcome-tag{color:var(--danger);}
+.outcome-panel p{margin:0;font-size:14.5px;}
+.scenario-nav{display:flex;justify-content:space-between;margin-top:30px;}
+
+/* ---------- ABOUT ---------- */
+.about-body{max-width:62ch;}
+.about-body p{margin:0 0 18px;font-size:16px;}
+.disclaimer{
+  margin-top:8px;border-left:2px solid var(--amber);padding:16px 20px;background:var(--amber-soft);
+  font-size:14px;color:var(--text);
+}
+
+footer.site{border-top:1px solid var(--line);padding:34px 0;margin-top:0;}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-family:var(--mono);font-size:13px;color:var(--text-muted);}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+@media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important;}}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="nav-inner">
+    <div class="logo"><span class="dot"></span>SİBER ÜS</div>
+    <button class="burger" id="burgerBtn" aria-label="Menüyü aç"><span></span><span></span><span></span></button>
+    <nav class="links" id="navLinks">
+      <button data-page="home" class="active">Anasayfa</button>
+      <button data-page="modules">Modüller</button>
+      <button data-page="scenarios">Senaryolar</button>
+      <button data-page="risk">Risk Testi</button>
+      <button data-page="progress">İlerlemem</button>
+      <button data-page="about">Hakkında</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ HOME ============ -->
+<main id="page-home">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow-line"><span class="dot"></span>9 modül · sıfırdan başlangıç</p>
+        <h1 class="hero-title">Siber güvenliği baştan, doğru öğren.</h1>
+        <p class="lead">Hiç teknik geçmişin olmasa da olur. Parolalardan kimlik avına, ağlardan kariyer yollarına kadar siber güvenliğin tüm temel alanlarını adım adım, sınavlarla ilerleyerek öğren.</p>
+        <div class="cta-row">
+          <button class="btn" data-page="modules" data-goto="modules">Yolculuğa başla</button>
+          <button class="btn secondary" data-page="risk">Riskini ölç</button>
+        </div>
+      </div>
+      <svg class="hero-art" viewBox="0 0 460 360" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="var(--line-strong)" stroke-width="1" fill="none">
+          <line x1="230" y1="70" x2="90" y2="150"/>
+          <line x1="230" y1="70" x2="230" y2="180"/>
+          <line x1="230" y1="70" x2="370" y2="150"/>
+          <line x1="90" y1="150" x2="60" y2="260"/>
+          <line x1="90" y1="150" x2="160" y2="250"/>
+          <line x1="230" y1="180" x2="160" y2="250"/>
+          <line x1="230" y1="180" x2="300" y2="260"/>
+          <line x1="370" y1="150" x2="300" y2="260"/>
+          <line x1="370" y1="150" x2="400" y2="255"/>
+        </g>
+        <g fill="var(--paper)" stroke="var(--ink)" stroke-width="1.4">
+          <circle cx="230" cy="70" r="14"/>
+          <circle cx="90" cy="150" r="10"/>
+          <circle cx="230" cy="180" r="10"/>
+          <circle cx="370" cy="150" r="10"/>
+          <circle cx="60" cy="260" r="7"/>
+          <circle cx="160" cy="250" r="7"/>
+          <circle cx="300" cy="260" r="7"/>
+          <circle cx="400" cy="255" r="7"/>
+        </g>
+        <circle cx="230" cy="70" r="4" fill="var(--signal)"/>
+        <circle cx="90" cy="150" r="3" fill="var(--signal)"/>
+        <circle cx="160" cy="250" r="3" fill="var(--amber)"/>
+      </svg>
+    </div>
+  </section>
+
+  <section class="principles">
+    <div class="wrap">
+      <div class="principle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v6c0 5-3.2 7.8-7 9-3.8-1.2-7-4-7-9V6l7-3z"/></svg>
+        <h3>Önkoşulsuz</h3>
+        <p>Teknik terimler ilk geçtiği yerde açıklanır. Hiçbir modül önceden bilgi gerektirmez.</p>
+      </div>
+      <div class="principle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h16M4 12l5-5M4 12l5 5"/></svg>
+        <h3>Adım adım yol</h3>
+        <p>9 modül, en temelden en güncel konulara doğru sıralı bir öğrenme rotası izler.</p>
+      </div>
+      <div class="principle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M8 12l2.5 2.5L16 9"/></svg>
+        <h3>Sınavla ölç</h3>
+        <p>Her modülün sonunda kısa bir sınavla öğrendiklerini anında test edersin.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ MODULES LIST ============ -->
+<main id="page-modules" class="hide">
+  <div class="wrap section">
+    <div class="section-head">
+      <h2>Öğrenme Yolu</h2>
+      <p>Modülleri istediğin sırada açabilirsin, ama sıfırdan başlıyorsan yukarıdan aşağı ilerlemeni öneririz.</p>
+    </div>
+    <div class="search-row"><input id="searchInput" type="text" placeholder="Modüllerde ara... (örn. parola, phishing, VPN, sertifika)"></div>
+    <div class="path" id="pathList"></div>
+    <p class="search-empty hide" id="searchEmpty">Aramanla eşleşen bir modül bulunamadı.</p>
+  </div>
+</main>
+
+<!-- ============ MODULE DETAIL ============ -->
+<main id="page-detail" class="hide">
+  <div class="wrap section">
+    <div class="detail-head">
+      <button class="back-btn" id="backToModules">← Yola dön</button>
+    </div>
+    <div id="detailContent"></div>
+  </div>
+</main>
+
+<!-- ============ SCENARIOS LIST ============ -->
+<main id="page-scenarios" class="hide">
+  <div class="wrap section">
+    <div class="section-head">
+      <h2>Gerçek Senaryolar</h2>
+      <p>Bilgiyi ezberlemek yerine gerçek hayattan durumlarda karar ver. Her senaryonun doğru bir cevabı ve açıklaması var.</p>
+    </div>
+    <div class="scenario-grid" id="scenarioGrid"></div>
+  </div>
+</main>
+
+<!-- ============ SCENARIO DETAIL ============ -->
+<main id="page-scenario-detail" class="hide">
+  <div class="wrap section">
+    <button class="back-btn" id="backToScenarios">← Senaryolara dön</button>
+    <div id="scenarioDetailContent" style="max-width:68ch;margin-top:26px;"></div>
+  </div>
+</main>
+
+<!-- ============ RISK TEST ============ -->
+<main id="page-risk" class="hide">
+  <div class="wrap section">
+    <div class="section-head">
+      <h2>Riskini Ölç</h2>
+      <p>Günlük dijital alışkanlıklarınla ilgili 8 kısa soru; sonunda kişisel bir risk seviyesi ve sana özel önerilen modülleri göreceksin.</p>
+    </div>
+    <div id="riskArea"></div>
+  </div>
+</main>
+
+<!-- ============ PROGRESS ============ -->
+<main id="page-progress" class="hide">
+  <div class="wrap section">
+    <div class="section-head">
+      <h2>İlerlemem</h2>
+      <p>Tamamladığın modüller bu cihazda saklanır.</p>
+    </div>
+    <div class="progress-summary">
+      <div>
+        <div class="progress-num" id="progressCount">0 / 9</div>
+        <div class="progress-label">modül tamamlandı</div>
+      </div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+    </div>
+    <div class="progress-list" id="progressList"></div>
+
+    <div class="section-head" style="margin-top:52px;">
+      <h2>Rozetler</h2>
+      <p>İlerledikçe kazanacağın rozetler burada birikir.</p>
+    </div>
+    <div class="badges-grid" id="badgesGrid"></div>
+
+    <div class="cert-teaser" id="certTeaser"></div>
+
+    <div class="reset-row">
+      <button class="reset-btn" id="resetProgress">İlerlemeyi sıfırla</button>
+    </div>
+  </div>
+</main>
+
+<!-- ============ CERTIFICATE ============ -->
+<main id="page-certificate" class="hide">
+  <div class="wrap section">
+    <button class="back-btn" id="backFromCert">← İlerlemeye dön</button>
+    <div class="cert-wrap">
+      <div class="cert-actions">
+        <button class="btn" id="printCertBtn">Yazdır / PDF olarak kaydet</button>
+      </div>
+      <div class="certificate" id="certificateBody"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ============ ABOUT ============ -->
+<main id="page-about" class="hide">
+  <div class="wrap section">
+    <div class="section-head">
+      <h2>Hakkında</h2>
+    </div>
+    <div class="about-body">
+      <p>Siber Üs, siber güvenlik konusunda hiçbir ön bilgisi olmayan herkesin bu alana güvenle adım atabilmesi için hazırlanmış bir farkındalık ve temel eğitim platformudur. Amaç, seni bir güvenlik uzmanı yapmak değil; günlük hayatında ve ileride istersen bu alanda ilerlerken sana sağlam bir zemin vermektir.</p>
+      <p>Her modül, konuyu günlük hayattan örneklerle anlatır ve sonundaki kısa sınavla öğrendiklerini tazeler. İçerik teknik jargon yerine sade Türkçe ile yazılmıştır.</p>
+      <div class="disclaimer">Bu platformdaki içerikler yalnızca farkındalık ve temel eğitim amaçlıdır; saldırı tekniklerinin nasıl uygulanacağını öğretmez. Gerçek sistemlerde izinsiz güvenlik testi yapmak yasal sonuçlar doğurabilir.</div>
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap footer-inner">
+    <span>SİBER ÜS — eğitim amaçlı hazırlanmıştır</span>
+    <span id="footerProgress">0 / 9 modül tamam</span>
+  </div>
+</footer>
+
+<script>
+/* ---------------- ICONS ---------------- */
+const ICONS = {
+  shield:'<path d="M12 3l7 3v6c0 5-3.2 7.8-7 9-3.8-1.2-7-4-7-9V6l7-3z"/>',
+  key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l2 2M14 9l2 2"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 6l9 7 9-7"/>',
+  bug:'<rect x="8" y="8" width="8" height="10" rx="4"/><path d="M12 8V5M9 4l1.5 1.5M15 4l-1.5 1.5M4 12h4M16 12h4M5 17l3-1.5M19 17l-3-1.5M5 8l3 1.5M19 8l-3 1.5"/>',
+  network:'<circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="18" r="2.2"/><path d="M12 7.2V13M12 13L6.5 16.3M12 13l5.5 3.3"/>',
+  code:'<path d="M9 8l-4 4 4 4M15 8l4 4-4 4"/>',
+  cloud:'<path d="M7 17a4 4 0 010-8 5 5 0 019.6-1.5A3.5 3.5 0 0117 17H7z"/>',
+  lockcheck:'<rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M8 10V7a4 4 0 018 0v3M9 15l1.8 1.8L15 13"/>',
+  cap:'<path d="M12 4l10 5-10 5-10-5 10-5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/>',
+  flag:'<path d="M6 4v16M6 4h11l-2.5 3L17 10H6"/>',
+  star:'<path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.3L12 17l-5.6 3.1 1.4-6.3-4.8-4.3 6.4-.6L12 3z"/>',
+  phone:'<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M10.5 18.5h3"/>',
+  usb:'<rect x="9" y="3" width="6" height="7" rx="1"/><path d="M12 10v6M12 16l-3.5 2.5M12 16l3.5 2.5"/><circle cx="8.5" cy="19.2" r="1"/><circle cx="15.5" cy="19.2" r="1"/>'
+};
+function icon(name,extra){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" '+ (extra||'') +'>'+ICONS[name]+'</svg>';}
+
+/* ---------------- CONTENT DATA ---------------- */
+const MODULES = [
+{
+  id:'temel', icon:'shield', title:'Temel Kavramlar ve CIA Üçlüsü',
+  summary:'Siber güvenlik ne demek, hangi üç şeyi korumaya çalışıyoruz?',
+  sections:[
+    'Siber güvenlik, bilgisayarları, telefonları, ağları ve üzerlerindeki verileri; yetkisiz erişime, hasara veya hırsızlığa karşı korumak anlamına gelir. Bu, sadece şirketlerin değil; e-postan, banka hesabın, fotoğrafların gibi kendi dijital hayatının da bir parçasıdır.',
+    'Alandaki en temel çerçeve "CIA Üçlüsü"dür: Gizlilik (Confidentiality) — bilgiye sadece yetkili kişilerin erişebilmesi; örneğin sadece senin banka hesap bakiyeni görebilmen. Bütünlük (Integrity) — verinin yetkisiz biçimde değiştirilmemesi; örneğin bir faturadaki tutarın kimse tarafından değiştirilememesi. Erişilebilirlik (Availability) — sisteme ihtiyaç olduğunda ulaşılabilmesi; örneğin acil durumda hastane sisteminin çalışır olması.',
+    'Bu alanda üç kavramı birbirinden ayırmak önemlidir: Açık (vulnerability) bir sistemdeki zayıflıktır; tehdit (threat) bu zayıflığı kötüye kullanabilecek kişi veya olaydır; risk ise bu ikisinin birleşiminin yaratabileceği olası zarardır. Güvenlik, bu riski kabul edilebilir bir seviyeye indirmeye çalışan sürekli bir süreçtir, tek seferlik bir işlem değildir.'
+  ],
+  keyPoints:[
+    'Gizlilik, Bütünlük ve Erişilebilirlik (CIA), güvenliğin üç temel hedefidir.',
+    'Açık = zayıflık, tehdit = bu zayıflığı kullanabilecek unsur, risk = ikisinin birleşiminin olası sonucu.',
+    'Güvenlik bir varış noktası değil, sürekli devam eden bir süreçtir.'
+  ],
+  quiz:[
+    {q:'CIA üçlüsünde "I" harfi neyi temsil eder?', options:['Gizlilik','Bütünlük (Integrity)','Kimlik doğrulama','Erişilebilirlik'], correct:1, explain:'"I" — Integrity, yani verinin yetkisiz şekilde değiştirilmemesi anlamına gelen bütünlüktür.'},
+    {q:'Bir sunucunun aşırı istekle çökertilip kullanıcıların siteye erişememesi, CIA üçlüsünün öncelikle hangi unsurunu hedefler?', options:['Gizliliği','Bütünlüğü','Erişilebilirliği','Hiçbirini'], correct:2, explain:'Sistem çalışır durumda olamadığı için hedeflenen doğrudan erişilebilirliktir.'},
+    {q:'Aşağıdakilerden hangisi doğru tanımlanmıştır?', options:['Açık, bir zayıflığı kötüye kullanan kişidir.','Tehdit, sistemdeki bir yazılım hatasıdır.','Açık bir zayıflıktır, tehdit onu kullanabilecek unsurdur.','Risk, bir yazılımın adıdır.'], correct:2, explain:'Açık = zayıflık, tehdit = bu zayıflığı kullanabilecek kişi/olay.'}
+  ]
+},
+{
+  id:'parola', icon:'key', title:'Parola ve Kimlik Güvenliği',
+  summary:'Güçlü bir parola nasıl olur ve neden aynı parolayı her yerde kullanmamalısın?',
+  sections:[
+    'Bir parolayı güçlü yapan şey karmaşıklıktan çok uzunluktur. "G3ç!ci1" gibi kısa ama karmaşık görünen bir parola, "mavi-kapı-42-yıldız" gibi uzun ve akılda kalıcı bir parola kadar güvenli değildir. Uzun, benzersiz ve tahmin edilemez parolalar en iyi savunmadır.',
+    'Aynı parolayı birden fazla hesapta kullanmak büyük bir risktir. Bir sitede veri sızıntısı olduğunda, saldırganlar bu parolayı diğer sitelerde de otomatik olarak denerler; buna "credential stuffing" (kimlik bilgisi doldurma) denir. Bu yüzden her hesabın kendine özgü bir parolası olmalıdır.',
+    'Onlarca farklı parolayı ezberlemek gerçekçi değildir; burada bir parola yöneticisi devreye girer. Parola yöneticisi, tüm parolalarını şifreli bir kasada saklar, sen sadece tek bir ana parolayı hatırlarsın. Ayrıca mümkün olan her yerde iki adımlı doğrulama (bir sonraki modülde detaylı) ek bir güvenlik katmanı sağlar.'
+  ],
+  keyPoints:[
+    'Uzunluk, karmaşıklıktan daha önemlidir.',
+    'Her hesap için farklı ve benzersiz bir parola kullan.',
+    'Bir parola yöneticisi, düzinelerce güçlü parolayı yönetmeni kolaylaştırır.'
+  ],
+  quiz:[
+    {q:'Bir parolayı gerçekten güçlü yapan en önemli özellik nedir?', options:['Kısa ama sembol dolu olması','Uzun ve benzersiz olması','Doğum tarihini içermesi','Kolay hatırlanabilir bir kelime olması'], correct:1, explain:'Uzunluk ve benzersizlik, parola gücünün en belirleyici unsurlarıdır.'},
+    {q:'Bir sitedeki veri sızıntısından çalınan parolanın başka sitelerde otomatik denenmesine ne denir?', options:['Phishing','Credential stuffing','Firewall','Şifreleme'], correct:1, explain:'Bu saldırı türü credential stuffing (kimlik bilgisi doldurma) olarak adlandırılır.'},
+    {q:'Parola yöneticisi kullanmanın temel avantajı nedir?', options:['Parolanı internete yayınlar','Her hesap için benzersiz, güçlü parolayı hatırlamana gerek kalmadan saklar','Parolanı otomatik olarak herkese açık hale getirir','Sadece şirketler için gereklidir'], correct:1, explain:'Parola yöneticisi, düzinelerce benzersiz ve güçlü parolayı senin adına şifreli şekilde saklar.'}
+  ]
+},
+{
+  id:'phishing', icon:'mail', title:'Kimlik Avı ve Sosyal Mühendislik',
+  summary:'Sahte e-postalar ve mesajlar seni nasıl kandırmaya çalışır?',
+  sections:[
+    'Kimlik avı (phishing), saldırganın kendini güvenilir biri (bankan, bir kargo şirketi, işvereni) gibi göstererek senden parola, kart bilgisi gibi hassas veriler almaya çalıştığı saldırı türüdür. Genellikle e-posta, SMS veya mesajlaşma uygulamaları üzerinden gelir.',
+    'Tipik bir kimlik avı mesajının ortak özellikleri vardır: aşırı aciliyet hissi ("hesabın 24 saat içinde kapatılacak"), beklenmedik bir kazanç veya tehdit, gönderen adresinde küçük harf hataları, ve seni tıklamaya iten şüpheli bir bağlantı. Sosyal mühendislik ise bu fikrin daha genel halidir: saldırgan seni teknik bir açıktan değil, insan doğasından (güven, merak, korku, yardımseverlik) yararlanarak kandırır.',
+    'Korunmanın en pratik yolu şudur: bir mesajda aciliyet veya tehdit varsa, önce bir adım geriye çekil. Bağlantıya tıklamadan önce üzerine gelip gerçek adresi kontrol et, kurumun resmi uygulamasından veya bildiğin telefon numarasından doğrula, ve hiçbir zaman bir e-postadaki bağlantıdan gidip parola girme.'
+  ],
+  keyPoints:[
+    'Aciliyet, tehdit veya çok cazip bir teklif — bunlar kimlik avının klasik alarm işaretleridir.',
+    'Bağlantıya tıklamadan önce gerçek göndereni ve bağlantı adresini kontrol et.',
+    'Şüpheli bir durumda kurumu, mesajdaki bilgiyi değil, kendi bildiğin resmi kanaldan doğrula.'
+  ],
+  quiz:[
+    {q:'Aşağıdakilerden hangisi tipik bir kimlik avı mesajının işaretidir?', options:['Sakin ve bilgilendirici bir dil','Aşırı aciliyet ve tehdit içeren bir ton','Gönderenin tam ve doğru kurumsal adresi','Hiçbir bağlantı içermemesi'], correct:1, explain:'Aciliyet ve tehdit hissi yaratmak, kurbanı düşünmeden hareket etmeye iten klasik bir taktiktir.'},
+    {q:'Şüpheli bir bağlantı içeren mesaj aldığında en güvenli davranış nedir?', options:['Bağlantıya tıklayıp parolanı girmek','Mesajı yanıtlayıp doğrulama istemek','Kurumu, mesajdaki bilgi yerine bildiğin resmi kanaldan (uygulama/telefon) doğrulamak','Mesajı arkadaşlarına yönlendirmek'], correct:2, explain:'Doğrulamayı her zaman bağımsız, bilinen bir kanaldan yapmalısın; mesajın kendisine güvenme.'},
+    {q:'Sosyal mühendislik saldırganları temelde neyi hedef alır?', options:['Yalnızca yazılım açıklarını','İnsan davranışını (güven, korku, aciliyet hissi)','Sadece donanım arızalarını','İnternet hız sınırlamalarını'], correct:1, explain:'Sosyal mühendislik, teknik açıklardan değil insan psikolojisinden yararlanır.'}
+  ]
+},
+{
+  id:'malware', icon:'bug', title:'Zararlı Yazılımlar (Malware)',
+  summary:'Virüs, fidye yazılımı, casus yazılım — aralarındaki fark ne?',
+  sections:[
+    'Malware (zararlı yazılım), bir cihaza izinsiz girip zarar vermek, veri çalmak veya kontrolü ele almak için tasarlanmış yazılımların genel adıdır. En bilinen türleri şunlardır: virüs (kendini diğer dosyalara ekleyerek yayılan), solucan (worm, ağ üzerinden kendi başına yayılabilen), truva atı (trojan, zararsız bir yazılım gibi görünen ama arka planda kötü amaçlı çalışan), fidye yazılımı (ransomware, dosyalarını şifreleyip açmak için fidye isteyen) ve casus yazılım (spyware, farkında olmadan bilgilerini toplayan).',
+    'Malware genellikle e-posta ekleri, sahte yazılım indirmeleri, kırık (crack) programlar, güvenilmeyen reklamlar ve USB bellekler yoluyla yayılır. Kurulum genellikle kullanıcının bilerek veya bilmeyerek bir dosyayı çalıştırmasıyla gerçekleşir.',
+    'En temel korunma yolları: işletim sistemini ve uygulamaları güncel tutmak (güncellemeler genellikle bilinen açıkları kapatır), güvenilir bir antivirüs/anti-malware yazılımı kullanmak, tanımadığın kaynaklardan dosya indirmemek ve önemli dosyaların düzenli yedeğini almak — bu sayede bir fidye yazırımı saldırısında bile verini kaybetmezsin.'
+  ],
+  keyPoints:[
+    'Malware; virüs, solucan, truva atı, fidye yazılımı ve casus yazılım gibi birçok türe ayrılır.',
+    'Çoğu bulaşma, kullanıcının bilerek ya da bilmeyerek şüpheli bir dosyayı çalıştırmasıyla başlar.',
+    'Güncel yazılım, iyi bir antivirüs ve düzenli yedekleme en güçlü savunmandır.'
+  ],
+  quiz:[
+    {q:'Dosyalarını şifreleyip açmak için para talep eden zararlı yazılım türü nedir?', options:['Solucan (worm)','Fidye yazılımı (ransomware)','Truva atı','Casus yazılım'], correct:1, explain:'Fidye yazılımı, dosyalarını şifreler ve açmak için genellikle para talep eder.'},
+    {q:'Zararsız bir yazılım gibi görünüp arka planda kötü amaçlı çalışan malware türüne ne denir?', options:['Truva atı (trojan)','Solucan','Firewall','VPN'], correct:0, explain:'Truva atı adını, zararsız görünüp içinde tehlike barındırmasından alır.'},
+    {q:'Bir fidye yazılımı saldırısına karşı en etkili önlemlerden biri nedir?', options:['Hiç güncelleme yapmamak','Düzenli olarak önemli dosyaların yedeğini almak','Tüm e-posta eklerini otomatik açmak','Antivirüsü kapatmak'], correct:1, explain:'Düzenli yedek, dosyaların şifrelense bile kaybolmamasını sağlar.'}
+  ]
+},
+{
+  id:'ag', icon:'network', title:'Ağ Güvenliği Temelleri',
+  summary:'İnternete nasıl bağlanıyoruz ve açık Wi-Fi neden risklidir?',
+  sections:[
+    'Bir ağ, cihazların birbiriyle veya internetle iletişim kurmasını sağlayan bağlantılar bütünüdür. Her cihazın ağ üzerinde bir IP adresi vardır; router (yönlendirici) ise evdeki cihazları internete bağlayan kapıdır. Firewall (güvenlik duvarı) ise ağa giren ve çıkan trafiği kurallara göre süzen bir kontrol noktasıdır.',
+    'Kafelerdeki veya havalimanlarındaki şifresiz "açık" Wi-Fi ağları risklidir, çünkü aynı ağdaki biri teorik olarak trafiğini izleyebilir. Bu senaryonun genel adı "ortadaki adam" (man-in-the-middle) saldırısıdır: saldırgan, senin ve gittiğin sunucu arasına girip veriyi dinler veya değiştirir.',
+    'Bu riske karşı en pratik savunma, mümkün olduğunda şifreli (HTTPS) siteler kullanmak ve açık ağlardayken hassas işlemler (bankacılık gibi) için bir VPN kullanmaktır. VPN, trafiğini şifreli bir tünel içinden geçirerek aradaki gözetlemeyi büyük ölçüde anlamsız kılar. Firewall ise günlük kullanımda, cihazına yetkisiz erişim denemelerini engelleyen ilk savunma hattıdır.'
+  ],
+  keyPoints:[
+    'Router, cihazları internete bağlar; firewall, gelen/giden trafiği kurallara göre süzer.',
+    'Açık Wi-Fi ağları, "ortadaki adam" saldırılarına daha açıktır.',
+    'HTTPS ve VPN, özellikle güvensiz ağlarda verini korumanın en pratik yollarıdır.'
+  ],
+  quiz:[
+    {q:'Bir ağa giren ve çıkan trafiği kurallara göre süzen bileşenin adı nedir?', options:['VPN','Firewall (güvenlik duvarı)','IP adresi','Antivirüs'], correct:1, explain:'Firewall, ağ trafiğini önceden tanımlı kurallara göre denetleyen bileşendir.'},
+    {q:'Saldırganın, iki taraf arasındaki iletişime gizlice girip veriyi dinlemesi hangi saldırı türüdür?', options:['Fidye yazılımı','Kimlik avı','Ortadaki adam (man-in-the-middle) saldırısı','Firewall ihlali'], correct:2, explain:'Bu, adından da anlaşılacağı gibi iki tarafın "ortasına" girmeyi ifade eder.'},
+    {q:'Açık bir Wi-Fi ağında hassas bir işlem yaparken en pratik korunma yöntemi nedir?', options:['Wi-Fi\'yi kapatmadan devam etmek','HTTPS kullanmak ve mümkünse bir VPN ile bağlanmak','Router\'ı yeniden başlatmak','Tarayıcı geçmişini silmek'], correct:1, explain:'HTTPS ve VPN, trafiğini şifreleyerek aradaki gözetlemeyi önemli ölçüde etkisiz kılar.'}
+  ]
+},
+{
+  id:'web', icon:'code', title:'Web Güvenliği Temelleri',
+  summary:'Web siteleri hangi risklerle karşılaşır, HTTPS ne işe yarar?',
+  sections:[
+    'Bir web sitesine girdiğinde, tarayıcın (istemci) ile sitenin sunucusu arasında bir iletişim kurulur. HTTPS, bu iletişimin şifreli olduğunu ve adres çubuğundaki kilit simgesiyle gösterilir; bu, aradaki verinin üçüncü bir kişi tarafından okunmasını zorlaştırır. Ancak HTTPS, sitenin içeriğinin güvenilir olduğunu garanti etmez — sadece iletişimin şifreli olduğunu gösterir.',
+    'İki yaygın web tehdidi kavramsal olarak şöyle özetlenebilir: XSS (Cross-Site Scripting), bir sitedeki güvenlik açığından yararlanarak saldırganın, o siteyi ziyaret eden başka kullanıcıların tarayıcısında izinsiz kod çalıştırmasına denir — örneğin bir yorum kutusuna gizlenmiş kodla diğer ziyaretçilerin oturum bilgilerini çalmaya çalışabilir. SQL Injection ise bir sitenin veritabanına gönderdiği sorgulara müdahale ederek yetkisiz veri okuma veya değiştirmeye çalışmaktır. Bu iki konuyu burada saldırı adımlarıyla değil, sadece "ne olduğu" ve "neden önemli olduğu" seviyesinde ele alıyoruz.',
+    'Bir site sahibi için savunma; kullanıcıdan gelen her girdiyi doğrulamak, veritabanı sorgularını güvenli (parametreli) şekilde yazmak ve yazılımları güncel tutmaktır. Bir kullanıcı olarak sana düşen ise: adres çubuğunda HTTPS olup olmadığına bakmak, tanımadığın sitelere kart veya kimlik bilgisi girmemek, ve bir sitenin normalden farklı davrandığını fark ettiğinde (beklenmedik pop-up, tuhaf yönlendirme) dikkatli olmaktır.'
+  ],
+  keyPoints:[
+    'HTTPS, iletişimin şifreli olduğunu gösterir; sitenin güvenilir olduğunu garanti etmez.',
+    'XSS, saldırganın diğer kullanıcıların tarayıcısında izinsiz kod çalıştırmasıdır.',
+    'SQL Injection, veritabanı sorgularına müdahale ederek yetkisiz veri erişimi sağlamaya çalışmaktır.',
+    'Girdi doğrulama ve güncel yazılım, bu tehditlere karşı temel savunmalardır.'
+  ],
+  quiz:[
+    {q:'Adres çubuğunda HTTPS/kilit simgesi görmek sana ne garanti eder?', options:['Sitenin içeriğinin tamamen güvenilir olduğunu','Tarayıcın ile sunucu arasındaki iletişimin şifreli olduğunu','Sitenin hiç reklam içermeyeceğini','Sitenin ücretsiz olduğunu'], correct:1, explain:'HTTPS sadece iletişimin şifreli olduğunu gösterir; site içeriğinin güvenilirliğini garanti etmez.'},
+    {q:'XSS (Cross-Site Scripting) saldırısının temel amacı nedir?', options:['Sunucunun elektriğini kesmek','Diğer kullanıcıların tarayıcısında izinsiz kod çalıştırmak','Wi-Fi şifresini kırmak','Bir e-postayı silmek'], correct:1, explain:'XSS, bir güvenlik açığından yararlanarak diğer kullanıcıların tarayıcısında izinsiz kod çalıştırmayı hedefler.'},
+    {q:'SQL Injection\'a karşı geliştiricilerin en temel savunması nedir?', options:['Veritabanını tamamen kapatmak','Kullanıcı girdisini doğrulamak ve güvenli/parametreli sorgular kullanmak','Sitenin rengini değiştirmek','Sadece mobil kullanıcıları kabul etmek'], correct:1, explain:'Girdi doğrulama ve parametreli sorgular, kullanıcıdan gelen verinin sorguyu değiştirmesini önler.'}
+  ]
+},
+{
+  id:'mobil', icon:'cloud', title:'Mobil ve Bulut Güvenliği',
+  summary:'Telefonundaki ve bulut hesaplarındaki verilerini nasıl korursun?',
+  sections:[
+    'Telefonun, üzerinde fotoğraflarından bankacılık uygulamalarına kadar çok fazla hassas veri barındırır. En büyük risklerden biri, uygulamalara gerekmeyen izinler (konum, rehber, mikrofon) vermektir — bir kağıt not uygulamasının kameraya erişim istemesi gibi durumlar şüpheli olmalıdır. Diğer önemli risk, resmi mağaza (App Store/Google Play) dışından indirilen sahte veya değiştirilmiş uygulamalardır.',
+    'Bulut depolama (Google Drive, iCloud, OneDrive gibi), dosyalarını kendi cihazın dışında bir sunucuda saklamanı sağlar. Burada "paylaşılan sorumluluk modeli" geçerlidir: sağlayıcı firma sunucuların fiziksel güvenliğinden sorumludur, ama hesabının güçlü bir parola ve iki adımlı doğrulama ile korunması senin sorumluluğundadır. Bulut hesabın ele geçirilirse, oradaki tüm dosyalar da risk altına girer.',
+    'Pratik öneriler: telefonunda her zaman bir ekran kilidi (PIN, parmak izi, yüz tanıma) kullan, uygulamaları sadece resmi mağazalardan indir ve izinlerini gözden geçir, cihazın kaybolur/çalınırsa uzaktan silme özelliğinin açık olduğundan emin ol, ve bulut hesaplarını en az telefonun kadar güçlü koru.'
+  ],
+  keyPoints:[
+    'Bir uygulamanın işleviyle alakasız izin istemesi (örn. not uygulamasının kamera istemesi) şüphe uyandırmalıdır.',
+    'Uygulamaları sadece resmi mağazalardan indir.',
+    'Bulut hesabın, içindeki tüm dosyalar kadar değerlidir — güçlü parola ve 2FA ile koru.'
+  ],
+  quiz:[
+    {q:'Bir not tutma uygulamasının kameraya ve rehbere erişim istemesi ne anlama gelebilir?', options:['Bu normaldir, tüm uygulamalar bunu ister','İşleviyle alakasız izin istemesi şüpheli olabilir, dikkatli değerlendirilmeli','Uygulamanın daha hızlı çalışacağı anlamına gelir','Telefonun bataryasının bittiği anlamına gelir'], correct:1, explain:'Bir uygulamanın işleviyle örtüşmeyen izin istekleri her zaman dikkatle değerlendirilmelidir.'},
+    {q:'Bulut depolamada "paylaşılan sorumluluk modeli" ne anlama gelir?', options:['Sorumluluk tamamen sağlayıcı firmadadır','Hesabının güvenliği (parola, 2FA) sana, sunucu altyapısının güvenliği sağlayıcıya aittir','Sorumluluk tamamen kullanıcıya aittir, firma hiçbir şeyden sorumlu değildir','Bu model sadece şirketler için geçerlidir'], correct:1, explain:'Sağlayıcı altyapıyı korur, sen ise hesap erişimini (parola, 2FA) korumakla sorumlusun.'},
+    {q:'Yeni bir uygulama indirirken en güvenli yaklaşım nedir?', options:['Herhangi bir web sitesinden APK/dosya indirmek','Sadece resmi uygulama mağazasından indirmek','Arkadaşından bluetooth ile almak','Reklamdaki bağlantıya tıklamak'], correct:1, explain:'Resmi mağazalar, uygulamaları belirli bir denetimden geçirir ve sahte uygulama riskini azaltır.'}
+  ]
+},
+{
+  id:'aliskanlik', icon:'lockcheck', title:'Güvenli Dijital Alışkanlıklar',
+  summary:'İki adımlı doğrulama, VPN ve yedekleme — günlük savunma hattın.',
+  sections:[
+    'İki adımlı doğrulama (2FA/MFA), parolana ek olarak ikinci bir kanıt istemektir: SMS ile gelen kod, bir doğrulama uygulaması (authenticator app) üzerindeki değişen kod veya fiziksel bir güvenlik anahtarı. SMS kodu en yaygın ama en zayıf yöntemdir (SIM değiştirme dolandırıcılığına açık olabilir); bir authenticator uygulaması veya donanım anahtarı daha güçlü bir koruma sağlar. Önemli olan, hiçbir 2FA yönteminin olmamasından her zaman daha iyi olduğudur.',
+    'VPN (Virtual Private Network), trafiğini şifreli bir tünelden geçirerek, özellikle güvenilmeyen ağlarda seni izlemeye çalışanlara karşı koruma sağlar. Ama VPN sihirli bir kalkan değildir: kötü niyetli bir siteye kendi bilgilerini girersen, VPN seni bundan korumaz. VPN gizliliğini artırır, ama dikkatsizliğin yerini almaz.',
+    'Son olarak, düzenli yedekleme her senaryonun kurtarıcısıdır. Basit bir kural, "3-2-1" kuralıdır: verinin en az 3 kopyası, 2 farklı ortamda (örneğin bilgisayar + harici disk), 1 kopyası da fiziksel olarak başka bir yerde (veya bulutta) olmalıdır. Bunun yanında işletim sistemi ve uygulama güncellemelerini geciktirmemek, bilinen açıkların kapatılmasını sağlar.'
+  ],
+  keyPoints:[
+    'Herhangi bir 2FA yöntemi, hiç 2FA olmamasından her zaman daha güvenlidir.',
+    'Authenticator uygulaması veya donanım anahtarı, SMS koduna göre daha güçlü bir 2FA yöntemidir.',
+    'VPN gizliliği artırır ama dikkatsiz davranışın sonuçlarını ortadan kaldırmaz.',
+    '3-2-1 yedekleme kuralı: 3 kopya, 2 farklı ortam, 1 kopya başka bir yerde.'
+  ],
+  quiz:[
+    {q:'Aşağıdaki 2FA yöntemlerinden hangisi genellikle en güçlü kabul edilir?', options:['SMS ile gelen kod','Authenticator uygulaması veya donanım güvenlik anahtarı','E-posta ile gelen kod','Hiçbiri, 2FA gereksizdir'], correct:1, explain:'Authenticator uygulamaları ve donanım anahtarları, SIM değiştirme gibi risklere karşı SMS\'ten daha güçlüdür.'},
+    {q:'VPN kullanmak hangi durumda seni korumaz?', options:['Açık Wi-Fi\'da trafiğinin dinlenmesine karşı','Kendi isteğinle kötü niyetli bir siteye bilgilerini girdiğinde','Bir kafede internete bağlandığında','Trafiğinin şifrelenmesi gerektiğinde'], correct:1, explain:'VPN iletişimini şifreler, ama bilerek yanlış bir siteye bilgi girmenin sonuçlarını değiştirmez.'},
+    {q:'"3-2-1" yedekleme kuralı ne anlama gelir?', options:['3 farklı parola, 2 e-posta, 1 telefon','3 kopya veri, 2 farklı ortam, 1 kopya başka bir yerde','3 gün, 2 hafta, 1 ay aralıklarla yedekleme','3 farklı antivirüs kullanmak'], correct:1, explain:'Kural, verinin 3 kopyasının, 2 farklı ortamda ve 1 kopyasının başka bir yerde tutulmasını önerir.'}
+  ]
+},
+{
+  id:'kariyer', icon:'cap', title:'Kariyer Yolları ve Sertifikalar',
+  summary:'Siber güvenlikte hangi roller var, nereden başlanır?',
+  sections:[
+    'Siber güvenlik alanı tek bir meslek değil, birçok farklı rolü kapsayan bir şemsiyedir. SOC analisti, bir şirketin güvenlik olaylarını 7/24 izler ve ilk müdahaleyi yapar. Sızma testi uzmanı (pentester), izin verilen sistemlere kontrollü saldırılar düzenleyerek açıkları önceden bulur. Güvenlik mühendisi, savunma sistemlerini tasarlar ve kurar. GRC/uyumluluk uzmanı, şirketin yasal ve düzenleyici gereksinimlere uyumunu takip eder. Adli bilişim (forensics) uzmanı ise bir saldırı sonrası ne olduğunu delillerle ortaya çıkarır.',
+    'Sıfırdan başlayan biri için önerilen yol genellikle şöyledir: önce ağların ve işletim sistemlerinin (Windows/Linux) temellerini öğrenmek, ardından temel bir programlama/betik dili (örneğin Python) öğrenmek, sonrasında bu platformdaki gibi temel kavramları sindirmek. Pratik yapmak için, kendi kurduğun sanal makineler veya CTF (Capture The Flag) platformları gibi yasal, bunun için tasarlanmış ortamlar kullanılır — başka birinin izni olmayan sistemlerde asla pratik yapılmamalıdır.',
+    'Giriş seviyesinde tanınan sertifikalardan biri CompTIA Security+ olup, temel güvenlik kavramlarını kapsar ve işe alımlarda sık aranır. İlerleyen seviyelerde alan bazlı sertifikalar (örneğin sızma testi, bulut güvenliği, güvenlik yönetimi alanlarında) mevcuttur. Ancak en önemli şey sertifika biriktirmek değil; merak, sürekli öğrenme isteği ve pratik yapma alışkanlığıdır.'
+  ],
+  keyPoints:[
+    'Siber güvenlik; SOC analistliği, sızma testi, güvenlik mühendisliği, uyumluluk ve adli bilişim gibi çok çeşitli roller içerir.',
+    'Ağ, işletim sistemi ve temel bir programlama dili bilgisi, güçlü bir başlangıç noktasıdır.',
+    'Pratik, yalnızca CTF gibi yasal ve bunun için tasarlanmış ortamlarda yapılmalıdır.',
+    'CompTIA Security+ gibi sertifikalar giriş seviyesinde yol gösterici olabilir, ama pratik ve merak daha önemlidir.'
+  ],
+  quiz:[
+    {q:'İzin verilen sistemlere kontrollü saldırılar düzenleyerek açıkları önceden bulan role ne denir?', options:['SOC analisti','Sızma testi uzmanı (pentester)','GRC uzmanı','Adli bilişim uzmanı'], correct:1, explain:'Sızma testi uzmanları, izin dahilinde saldırı simülasyonları yaparak açıkları tespit eder.'},
+    {q:'Siber güvenlikte pratik yapmak için önerilen yaklaşım nedir?', options:['Rastgele bulduğun herhangi bir web sitesinde deneme yapmak','Sadece kendi kurduğun sanal makineler veya CTF gibi bunun için tasarlanmış yasal ortamları kullanmak','Bir arkadaşının hesabını izinsiz denemek','Hiç pratik yapmadan sertifikaya girmek'], correct:1, explain:'Başkasının izni olmayan sistemlerde pratik yapmak yasal sorun oluşturur; CTF ve kendi sanal makinelerin bunun için güvenli ortamlardır.'},
+    {q:'Giriş seviyesinde sıkça tercih edilen genel güvenlik sertifikası hangisidir?', options:['CompTIA Security+','Bir yemek pişirme sertifikası','Sürücü belgesi','Herhangi bir üniversite diploması'], correct:0, explain:'CompTIA Security+, temel güvenlik kavramlarını kapsayan, giriş seviyesinde yaygın tercih edilen bir sertifikadır.'}
+  ]
+}
+];
+
+/* ---------------- SCENARIOS DATA ---------------- */
+const SCENARIOS = [
+  {
+    id:'phishing-mail', title:'"Hesabınız Kapatılacak" E-postası', tag:'KİMLİK AVI', icon:'mail',
+    setupType:'email',
+    setup:{from:'destek@bankaniz-guvenlik-merkezi.com', subject:'ACİL: Hesabınız 24 saat içinde kapatılacak!',
+      body:'Sayın müşterimiz, hesabınızda şüpheli bir hareket tespit edildi. Hesabınızın kapanmasını önlemek için bilgilerinizi hemen doğrulayın:',
+      link:'hesabimi-dogrula-guvenlik.com/giris'},
+    choices:[
+      {label:'Bağlantıya tıkla ve bilgilerini gir', level:'bad', outcome:'Bu klasik bir kimlik avı e-postası. Gönderen adresi bankanın resmi adresine benzemiyor ve mesaj bilinçli olarak seni acele ettiriyor. Bilgilerini girersen doğrudan saldırgana vermiş olursun.'},
+      {label:'E-postayı yanıtla, durumu sor', level:'ok', outcome:'Yanıtlamak tıklamaktan biraz daha az risklidir, ama saldırgan seninle iletişime geçip ikna etmeye devam edebilir. En güvenli yol bu değil.'},
+      {label:'Bağlantıya dokunma; bankanı resmi uygulamasından veya bilinen numaradan ara', level:'good', outcome:'Doğru hareket. Aciliyet hissi yaratan mesajlarda kurumu her zaman kendi bildiğin resmi kanaldan doğrulamalısın, mesajın içindeki bilgiden değil.'}
+    ]
+  },
+  {
+    id:'fake-it-call', title:'"Ben BT Departmanındanım" Araması', tag:'SOSYAL MÜHENDİSLİK', icon:'phone',
+    setupType:'call',
+    setup:{line:'"Merhaba, ben şirketin BT departmanından arıyorum. Sistemde bir sorun tespit ettik, düzeltmek için şu anki parolanızı benimle paylaşır mısınız?"'},
+    choices:[
+      {label:'Parolanı hemen paylaş, BT dediyse doğrudur', level:'bad', outcome:'Gerçek BT ekipleri telefonda asla açık parola istemez. Bu, "pretexting" denen tipik bir sosyal mühendislik saldırısıdır.'},
+      {label:'Şüphelen ama yine de kısmi bilgi ver', level:'bad', outcome:'Küçük parça bilgiler de risklidir; saldırgan bunları birleştirerek daha büyük bir saldırı kurabilir. Hiçbir kimlik bilgisini telefonda doğrulanmamış birine verme.'},
+      {label:'Kapat, şirketin bilinen BT hattını kendin arayıp durumu doğrula', level:'good', outcome:'Doğru hareket. Gelen aramanın kimliğini arayanın kendisi üzerinden asla doğrulama; her zaman bilinen, güvenilir bir numaradan geri ara.'}
+    ]
+  },
+  {
+    id:'open-wifi-banking', title:'Kafede Açık Wi-Fi ile Bankacılık', tag:'AĞ GÜVENLİĞİ', icon:'network',
+    setupType:'generic',
+    setup:{text:'Bir kafede oturuyorsun, telefonun kafenin şifresiz Wi-Fi\'sine bağlı. Bankandan gelen bir bildirimle ilgilenmen ve hesabına giriş yapman gerekiyor.'},
+    choices:[
+      {label:'Direkt bu Wi-Fi üzerinden bankacılık uygulamana gir', level:'bad', outcome:'Şifresiz ağlarda hassas işlemler yapmak, trafiğinin aynı ağdaki biri tarafından izlenme riskini (ortadaki adam saldırısı) artırır.'},
+      {label:'Wi-Fi\'yi kapat, mobil verinle (4G/5G) bankacılık uygulamasını kullan', level:'good', outcome:'Doğru hareket. Mobil veri bağlantısı, şifresiz açık Wi-Fi\'den çok daha güvenlidir.'},
+      {label:'Wi-Fi\'de kal ama işlemi eve gidene kadar ertele', level:'ok', outcome:'Ertelemek güvenli bir seçenek, ama pratik değilse mobil veriye geçmek genellikle daha kolay ve aynı ölçüde güvenli bir çözümdür.'}
+    ]
+  },
+  {
+    id:'found-usb', title:'Otoparkta Bulunan USB Bellek', tag:'FİZİKSEL GÜVENLİK', icon:'usb',
+    setupType:'generic',
+    setup:{text:'İşyerinin otoparkında yerde "Maaş Zamları 2026.xlsx" etiketli bir USB bellek buluyorsun.'},
+    choices:[
+      {label:'Merak edip bilgisayarına takıp içeriğine bak', level:'bad', outcome:'Saldırganlar, merak uyandıran etiketlerle USB bellekleri kasıtlı olarak ortalıkta bırakır (buna "baiting" denir). Takmak cihazına zararlı yazılım bulaştırabilir.'},
+      {label:'Görmezden gel, hiçbir şey yapma', level:'ok', outcome:'Takmamak doğru bir refleks, ama bu bir güvenlik tehdidi olabileceği için ilgili birime bildirmek daha faydalı olurdu.'},
+      {label:'Takmadan BT/güvenlik ekibine teslim et veya bildir', level:'good', outcome:'Doğru hareket. Bilinmeyen bir USB\'yi hiçbir cihaza takmadan ilgili birime teslim etmek en güvenli yoldur.'}
+    ]
+  },
+  {
+    id:'app-permissions', title:'Not Uygulamasının İzin İsteği', tag:'MOBİL GÜVENLİK', icon:'cloud',
+    setupType:'app',
+    setup:{appName:'Basit Not', permissions:['Kamera','Rehber','Konum','Mikrofon']},
+    choices:[
+      {label:'Hepsine izin ver, uygulama çalışsın diye', level:'bad', outcome:'Bir not uygulamasının kamera, rehber, konum ve mikrofona ihtiyacı olması mantıksızdır. Bu, gereksiz veri toplama işareti olabilir.'},
+      {label:'Uygulamayı hiç kurmadan sil', level:'ok', outcome:'Güvenli bir seçim, ama bu izinlerden bazıları bazen gerçekten gerekebilir; önce hangi iznin neden istendiğini incelemek daha bilinçli bir yaklaşımdır.'},
+      {label:'Sadece işleviyle alakalı izinleri ver, diğerlerini reddet', level:'good', outcome:'Doğru hareket. Çoğu işletim sistemi izinleri tek tek reddetmene izin verir; sadece gerçekten gerekli olanları onayla.'}
+    ]
+  }
+];
+
+/* ---------------- RISK TEST DATA ---------------- */
+const RISK_QUESTIONS = [
+  {id:'r1', module:'parola', q:'Parolalarını nasıl yönetiyorsun?', options:[
+    {t:'Aynı parolayı çoğu hesabımda kullanırım', p:0},
+    {t:'Bazı hesaplarımda aynı parolayı kullanırım', p:1},
+    {t:'Her hesapta farklı parola kullanırım, ezberlerim', p:2},
+    {t:'Parola yöneticisiyle her hesapta farklı, güçlü parola kullanırım', p:3}
+  ]},
+  {id:'r2', module:'phishing', q:'Şüpheli bir bağlantı içeren e-posta/mesaj aldığında ne yaparsın?', options:[
+    {t:'Genelde tıklarım, meraklıyımdır', p:0},
+    {t:'Bazen tıklarım', p:1},
+    {t:'Genelde tıklamam ama göndereni kontrol etmem', p:2},
+    {t:'Göndereni ve bağlantıyı kontrol eder, şüpheliyse resmi kanaldan doğrularım', p:3}
+  ]},
+  {id:'r3', module:'aliskanlik', q:'İki adımlı doğrulama (2FA) kullanıyor musun?', options:[
+    {t:'Ne olduğunu bilmiyorum', p:0},
+    {t:'Biliyorum ama kullanmıyorum', p:1},
+    {t:'Sadece bankam gibi kritik hesaplarda kullanıyorum', p:2},
+    {t:'Mümkün olan her hesapta kullanıyorum', p:3}
+  ]},
+  {id:'r4', module:'malware', q:'Cihazlarındaki güncellemeleri ne zaman yaparsın?', options:[
+    {t:'Hiç güncelleme yapmam, hep ertelerim', p:0},
+    {t:'Çok geciktiririm', p:1},
+    {t:'Genelde birkaç gün içinde yaparım', p:2},
+    {t:'Çıktığı gibi hemen güncellerim', p:3}
+  ]},
+  {id:'r5', module:'ag', q:'Halka açık (kafe, havalimanı) Wi-Fi kullanırken ne yaparsın?', options:[
+    {t:'Bankacılık dahil her şeyi yaparım, düşünmem', p:0},
+    {t:'Genelde dikkat etmem', p:1},
+    {t:'Hassas işlemlerden kaçınırım ama VPN kullanmam', p:2},
+    {t:'VPN veya mobil veri kullanır, sadece HTTPS sitelere güvenirim', p:3}
+  ]},
+  {id:'r6', module:'web', q:'Tanımadığın bir web sitesine kişisel/kart bilgisi girmeden önce ne kontrol edersin?', options:[
+    {t:'Genelde hiçbir şey kontrol etmem', p:0},
+    {t:'Sadece sitenin görünüşüne bakarım', p:1},
+    {t:'HTTPS olup olmadığına bakarım', p:2},
+    {t:'HTTPS\'e bakar, siteyi araştırırım; şüpheliyse hiç bilgi girmem', p:3}
+  ]},
+  {id:'r7', module:'mobil', q:'Telefonundaki uygulama izinlerini ve bulut hesap güvenliğini nasıl yönetiyorsun?', options:[
+    {t:'Hiç kontrol etmem, her izni kabul ederim', p:0},
+    {t:'Nadiren kontrol ederim', p:1},
+    {t:'Bazen izinleri gözden geçiririm', p:2},
+    {t:'Düzenli kontrol eder, bulut hesabımı güçlü parola+2FA ile korurum', p:3}
+  ]},
+  {id:'r8', module:'aliskanlik', q:'Önemli dosyalarını (fotoğraf, belge) yedekliyor musun?', options:[
+    {t:'Hiç yedeklemem', p:0},
+    {t:'Nadiren, düzenli değil', p:1},
+    {t:'Bulut otomatik yedekliyor ama kontrol etmem', p:2},
+    {t:'Düzenli olarak birden fazla ortamda yedeklerim', p:3}
+  ]}
+];
+
+/* ---------------- STATE / STORAGE ---------------- */
+const STORAGE_KEY = 'siberus_progress_v1';
+function loadProgress(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){ return {}; }
+}
+function saveProgress(p){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); }catch(e){}
+}
+let progress = loadProgress();
+
+const SCEN_KEY = 'siberus_scenarios_v1';
+function loadScenarioProgress(){
+  try{ const raw = localStorage.getItem(SCEN_KEY); return raw ? JSON.parse(raw) : {}; }catch(e){ return {}; }
+}
+function saveScenarioProgress(p){ try{ localStorage.setItem(SCEN_KEY, JSON.stringify(p)); }catch(e){} }
+let scenarioProgress = loadScenarioProgress();
+
+const RISK_KEY = 'siberus_risk_v1';
+function loadRiskResult(){
+  try{ const raw = localStorage.getItem(RISK_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
+}
+function saveRiskResult(r){ try{ localStorage.setItem(RISK_KEY, JSON.stringify(r)); }catch(e){} }
+
+function isDone(id){
+  const p = progress[id];
+  return !!p && (p===true || p.done);
+}
+function getScore(id){
+  const p = progress[id];
+  if(p && typeof p==='object' && typeof p.total==='number') return {score:p.score, total:p.total};
+  return null;
+}
+function completedCount(){
+  return MODULES.filter(m=>isDone(m.id)).length;
+}
+function isPerfect(id){
+  const s = getScore(id);
+  return !!s && s.total>0 && s.score===s.total;
+}
+
+/* ---------------- BADGES ---------------- */
+const BADGES = [
+  {id:'ilk-adim', title:'İlk Adım', desc:'İlk modülünü tamamla.', icon:'flag', test:()=> completedCount()>=1},
+  {id:'yari-yol', title:'Yarı Yol', desc:'5 modülü tamamla.', icon:'network', test:()=> completedCount()>=5},
+  {id:'kasif', title:'Kâşif', desc:'Tüm 9 modülü tamamla.', icon:'shield', test:()=> completedCount()>=MODULES.length},
+  {id:'mukemmel', title:'Mükemmeliyetçi', desc:'Bir sınavda tüm soruları doğru cevapla.', icon:'star', test:()=> MODULES.some(m=>isPerfect(m.id))},
+  {id:'sinav-ustasi', title:'Sınav Ustası', desc:'Üç farklı sınavda tam puan al.', icon:'cap', test:()=> MODULES.filter(m=>isPerfect(m.id)).length>=3},
+  {id:'risk-farkindaligi', title:'Risk Farkındalığı', desc:'Kişisel risk testini tamamla.', icon:'flag', test:()=> !!loadRiskResult()},
+  {id:'senaryo-ustasi', title:'Senaryo Ustası', desc:'Tüm gerçek senaryoları tamamla.', icon:'phone', test:()=> SCENARIOS.every(s=>!!scenarioProgress[s.id])}
+];
+function unlockedBadges(){
+  return BADGES.filter(b=>b.test());
+}
+
+/* ---------------- NAV / ROUTING ---------------- */
+const pages = ['home','modules','detail','progress','about','certificate','risk','scenarios','scenario-detail'];
+function showPage(name){
+  pages.forEach(p=>{
+    document.getElementById('page-'+p).classList.toggle('hide', p!==name);
+  });
+  document.querySelectorAll('nav.links button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.page===name);
+  });
+  document.getElementById('navLinks').classList.remove('open');
+  window.scrollTo({top:0, behavior:'instant' in window ? 'instant':'auto'});
+  if(name==='modules') renderModuleList();
+  if(name==='progress') renderProgressPage();
+  if(name==='scenarios') renderScenarioGrid();
+  if(name==='risk') renderRiskPage();
+}
+document.querySelectorAll('nav.links button, [data-page]').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    const target = el.dataset.page;
+    if(target) showPage(target);
+  });
+});
+document.getElementById('burgerBtn').addEventListener('click', ()=>{
+  document.getElementById('navLinks').classList.toggle('open');
+});
+document.getElementById('backToModules').addEventListener('click', ()=>showPage('modules'));
+document.getElementById('resetProgress').addEventListener('click', ()=>{
+  if(confirm('Tüm ilerlemeni sıfırlamak istediğine emin misin?')){
+    progress = {};
+    saveProgress(progress);
+    renderProgressPage();
+    updateFooter();
+  }
+});
+
+/* ---------------- RENDER: MODULE LIST ---------------- */
+function normalize(s){
+  return (s||'').toLocaleLowerCase('tr').replace(/i̇/g,'i');
+}
+function moduleMatches(m, term){
+  if(!term) return true;
+  const haystack = normalize([m.title, m.summary, m.sections.join(' '), m.keyPoints.join(' ')].join(' '));
+  return haystack.includes(normalize(term));
+}
+function renderModuleList(){
+  const term = (document.getElementById('searchInput')||{value:''}).value;
+  const el = document.getElementById('pathList');
+  const emptyEl = document.getElementById('searchEmpty');
+  const visible = MODULES.filter(m=>moduleMatches(m, term));
+  el.classList.toggle('hide', visible.length===0);
+  if(emptyEl) emptyEl.classList.toggle('hide', visible.length!==0);
+  el.innerHTML = '<div class="path-line"></div>' + visible.map((m)=>{
+    const i = MODULES.indexOf(m);
+    const done = isDone(m.id);
+    return '<div class="path-item">'
+      + '<div class="node'+(done?' done':'')+'">'+(done?'✓':String(i+1).padStart(2,'0'))+'</div>'
+      + '<div class="path-item card" data-open="'+m.id+'">'
+        + '<div class="card-main">'+icon(m.icon)+'<div><h3>'+m.title+'</h3><p>'+m.summary+'</p></div></div>'
+        + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;">'
+          + '<span class="card-status'+(done?' done':'')+'">'+(done?'Tamamlandı':'Başlanmadı')+'</span>'
+          + '<button class="open-btn" data-open="'+m.id+'">'+(done?'Tekrar aç':'Aç')+'</button>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+  el.querySelectorAll('[data-open]').forEach(node=>{
+    node.addEventListener('click', ()=>openModule(node.dataset.open));
+  });
+}
+document.addEventListener('input', (e)=>{
+  if(e.target && e.target.id==='searchInput') renderModuleList();
+});
+
+/* ---------------- RENDER: MODULE DETAIL ---------------- */
+function openModule(id){
+  const idx = MODULES.findIndex(m=>m.id===id);
+  const m = MODULES[idx];
+  if(!m) return;
+  const done = !!progress[m.id];
+  const html = ''
+    + '<div class="detail-title-row">'+icon(m.icon)+'<h2>'+m.title+'</h2></div>'
+    + '<p class="detail-num">Modül '+String(idx+1).padStart(2,'0')+' / '+String(MODULES.length).padStart(2,'0')+'</p>'
+    + '<article class="lesson">'+m.sections.map(p=>'<p>'+p+'</p>').join('')+'</article>'
+    + '<div class="keypoints"><h4>Özet noktalar</h4><ul>'+m.keyPoints.map(k=>'<li>'+k+'</li>').join('')+'</ul></div>'
+    + '<div class="quiz" id="quizArea">'
+      + '<h3>Kısa Sınav</h3><p class="hint">Her soruyu işaretle, sonra "Kontrol Et" butonuna bas.</p>'
+      + m.quiz.map((q,qi)=>renderQuestion(q,qi)).join('')
+      + '<div class="quiz-actions">'
+        + '<button class="btn" id="checkBtn">Kontrol Et</button>'
+        + '<span class="quiz-score" id="quizScore"></span>'
+      + '</div>'
+      + '<p class="complete-note" id="completeNote">✓ Bu modül ilerlemene işlendi.</p>'
+    + '</div>';
+  document.getElementById('detailContent').innerHTML = html;
+  showPage('detail');
+
+  document.getElementById('checkBtn').addEventListener('click', ()=>gradeQuiz(m));
+}
+
+function renderQuestion(q, qi){
+  return '<div class="q-block" data-qi="'+qi+'">'
+    + '<p class="q-prompt">'+(qi+1)+'. '+q.q+'</p>'
+    + '<div class="q-options">'
+      + q.options.map((opt,oi)=>(
+        '<label class="q-option" data-oi="'+oi+'">'
+        + '<input type="radio" name="q'+qi+'" value="'+oi+'"> <span>'+opt+'</span>'
+        + '</label>'
+      )).join('')
+    + '</div>'
+    + '<p class="q-feedback" data-fb="'+qi+'"></p>'
+  + '</div>';
+}
+
+function gradeQuiz(m){
+  let score = 0;
+  let answeredAll = true;
+  m.quiz.forEach((q,qi)=>{
+    const block = document.querySelector('.q-block[data-qi="'+qi+'"]');
+    const checked = block.querySelector('input[name="q'+qi+'"]:checked');
+    const fb = document.querySelector('.q-feedback[data-fb="'+qi+'"]');
+    block.querySelectorAll('.q-option').forEach(o=>o.classList.remove('correct','wrong'));
+    if(!checked){ answeredAll = false; return; }
+    const chosen = parseInt(checked.value,10);
+    const correctOpt = block.querySelector('.q-option[data-oi="'+q.correct+'"]');
+    correctOpt.classList.add('correct');
+    if(chosen === q.correct){
+      score++;
+    } else {
+      block.querySelector('.q-option[data-oi="'+chosen+'"]').classList.add('wrong');
+    }
+    fb.textContent = q.explain;
+    fb.classList.add('show');
+  });
+  const scoreEl = document.getElementById('quizScore');
+  if(!answeredAll){
+    scoreEl.textContent = 'Lütfen tüm soruları işaretle.';
+    return;
+  }
+  scoreEl.textContent = 'Skor: '+score+' / '+m.quiz.length;
+  progress[m.id] = {done:true, score:score, total:m.quiz.length};
+  saveProgress(progress);
+  document.getElementById('completeNote').classList.add('show');
+  updateFooter();
+}
+
+/* ---------------- RENDER: PROGRESS PAGE ---------------- */
+function renderProgressPage(){
+  const count = completedCount();
+  document.getElementById('progressCount').textContent = count+' / '+MODULES.length;
+  document.getElementById('progressFill').style.width = (count/MODULES.length*100)+'%';
+  const list = document.getElementById('progressList');
+  list.innerHTML = MODULES.map((m,i)=>{
+    const done = isDone(m.id);
+    const score = getScore(m.id);
+    const scoreText = score ? ' ('+score.score+'/'+score.total+')' : '';
+    return '<div class="progress-row">'
+      + '<div class="left"><div class="mark'+(done?' done':'')+'">'+(done?'✓':(i+1))+'</div><span class="title">'+m.title+'</span></div>'
+      + '<span class="status">'+(done?'Tamamlandı'+scoreText:'Bekliyor')+'</span>'
+    + '</div>';
+  }).join('');
+
+  const unlocked = unlockedBadges().map(b=>b.id);
+  document.getElementById('badgesGrid').innerHTML = BADGES.map(b=>{
+    const on = unlocked.includes(b.id);
+    return '<div class="badge-card'+(on?' unlocked':' locked')+'">'
+      + '<div class="badge-icon">'+icon(b.icon)+'</div>'
+      + '<h4>'+b.title+'</h4><p>'+b.desc+'</p>'
+    + '</div>';
+  }).join('');
+
+  renderCertTeaser();
+}
+
+function renderCertTeaser(){
+  const el = document.getElementById('certTeaser');
+  const allDone = completedCount() >= MODULES.length;
+  const savedName = localStorage.getItem('siberus_name') || '';
+  if(!allDone){
+    el.innerHTML = '<h3>Tamamlama Sertifikası</h3>'
+      + '<p>Tüm 9 modülü tamamladığında burada adına özel bir sertifika oluşturabilirsin.</p>'
+      + '<p class="cert-locked-note">'+completedCount()+' / '+MODULES.length+' modül tamamlandı — devam et.</p>';
+    return;
+  }
+  el.innerHTML = '<h3>Tebrikler, tüm modülleri tamamladın 🎉</h3>'
+    + '<p>Sertifikanda görünmesini istediğin adı yaz ve görüntüle.</p>'
+    + '<div class="cert-form">'
+      + '<input type="text" id="certNameInput" placeholder="Adın Soyadın" value="'+savedName.replace(/"/g,'&quot;')+'">'
+      + '<button class="btn" id="viewCertBtn">Sertifikayı Görüntüle</button>'
+    + '</div>';
+  document.getElementById('viewCertBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('certNameInput').value.trim() || 'İsimsiz Kâşif';
+    localStorage.setItem('siberus_name', name);
+    renderCertificate(name);
+    showPage('certificate');
+  });
+}
+
+function renderCertificate(name){
+  const today = new Date().toLocaleDateString('tr-TR', {year:'numeric', month:'long', day:'numeric'});
+  document.getElementById('certificateBody').innerHTML = ''
+    + '<p class="cert-eyebrow">SİBER ÜS · TAMAMLAMA SERTİFİKASI</p>'
+    + '<h2 class="cert-heading">Sıfırdan Siber Güvenlik</h2>'
+    + '<p class="cert-sub">9 modülün tamamını başarıyla tamamladı</p>'
+    + '<p class="cert-name">'+name.replace(/</g,'&lt;')+'</p>'
+    + '<p class="cert-line">'+today+' tarihinde</p>'
+    + '<div class="cert-foot"><span class="sig">Siber Üs Ekibi</span><span class="sig">'+today+'</span></div>'
+    + '<p class="cert-fine">Bu sertifika bir eğitim tamamlama belgesidir; resmi bir mesleki yeterlilik belgesi değildir.</p>';
+}
+
+document.getElementById('printCertBtn').addEventListener('click', ()=>window.print());
+document.getElementById('backFromCert').addEventListener('click', ()=>showPage('progress'));
+document.getElementById('backToScenarios').addEventListener('click', ()=>showPage('scenarios'));
+
+/* ---------------- SCENARIOS ---------------- */
+function renderScenarioGrid(){
+  const grid = document.getElementById('scenarioGrid');
+  grid.innerHTML = SCENARIOS.map(s=>{
+    const done = !!scenarioProgress[s.id];
+    return '<button class="scenario-card" data-scenario="'+s.id+'">'
+      + icon(s.icon)
+      + '<span class="tag">'+s.tag+'</span>'
+      + '<h3>'+s.title+'</h3>'
+      + '<p>'+(done?'Bu senaryoyu tamamladın.':'Kararını ver, sonucu ve açıklamasını gör.')+'</p>'
+      + '<span class="scenario-status'+(done?' done':'')+'">'+(done?'✓ Tamamlandı':'Başlanmadı')+'</span>'
+    + '</button>';
+  }).join('');
+  grid.querySelectorAll('[data-scenario]').forEach(btn=>{
+    btn.addEventListener('click', ()=>openScenario(btn.dataset.scenario));
+  });
+}
+
+function renderScenarioSetup(s){
+  if(s.setupType==='email'){
+    return '<div class="mock-email">'
+      + '<div class="row"><b>Gönderen:</b> '+s.setup.from+'</div>'
+      + '<div class="row"><b>Konu:</b> '+s.setup.subject+'</div>'
+      + '<div class="body">'+s.setup.body+'<br><br><span class="fake-link">'+s.setup.link+'</span></div>'
+    + '</div>';
+  }
+  if(s.setupType==='call'){
+    return '<div class="mock-call">'+icon('phone')+'<p>'+s.setup.line+'</p></div>';
+  }
+  if(s.setupType==='app'){
+    return '<div class="mock-app">'
+      + '<div class="head">"'+s.setup.appName+'" izin istiyor</div>'
+      + '<ul>'+s.setup.permissions.map(p=>'<li>'+p+' <span style="color:var(--text-muted);">İZİN VER</span></li>').join('')+'</ul>'
+    + '</div>';
+  }
+  return '<div class="mock-generic">'+icon(s.icon)+'<p>'+s.setup.text+'</p></div>';
+}
+
+function openScenario(id){
+  const s = SCENARIOS.find(x=>x.id===id);
+  if(!s) return;
+  const idx = SCENARIOS.indexOf(s);
+  const html = ''
+    + '<p class="detail-num" style="margin-bottom:6px;">'+s.tag+'</p>'
+    + '<h2 style="font-family:var(--mono);font-size:24px;margin:0 0 4px;font-weight:600;">'+s.title+'</h2>'
+    + renderScenarioSetup(s)
+    + '<div class="choice-list" id="choiceList">'
+      + s.choices.map((c,ci)=>'<button class="choice-btn" data-ci="'+ci+'">'+c.label+'</button>').join('')
+    + '</div>'
+    + '<div id="outcomeArea"></div>'
+    + '<div class="scenario-nav" id="scenarioNavRow"></div>';
+  document.getElementById('scenarioDetailContent').innerHTML = html;
+  showPage('scenario-detail');
+
+  document.querySelectorAll('#choiceList .choice-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const ci = parseInt(btn.dataset.ci,10);
+      const choice = s.choices[ci];
+      document.querySelectorAll('#choiceList .choice-btn').forEach(b=>b.disabled=true);
+      document.getElementById('outcomeArea').innerHTML =
+        '<div class="outcome-panel '+choice.level+'">'
+          + '<span class="outcome-tag">'+(choice.level==='good'?'EN GÜVENLİ SEÇİM':choice.level==='ok'?'DİKKATLİ AMA İDEAL DEĞİL':'RİSKLİ SEÇİM')+'</span>'
+          + '<p>'+choice.outcome+'</p>'
+        + '</div>';
+      scenarioProgress[s.id] = true;
+      saveScenarioProgress(scenarioProgress);
+      updateFooter();
+      const nextS = SCENARIOS[idx+1];
+      document.getElementById('scenarioNavRow').innerHTML = nextS
+        ? '<button class="btn" id="nextScenarioBtn">Sonraki senaryo →</button><span></span>'
+        : '<button class="btn secondary" id="doneScenarioBtn">Senaryolara dön</button><span></span>';
+      if(nextS) document.getElementById('nextScenarioBtn').addEventListener('click', ()=>openScenario(nextS.id));
+      const doneBtn = document.getElementById('doneScenarioBtn');
+      if(doneBtn) doneBtn.addEventListener('click', ()=>showPage('scenarios'));
+    });
+  });
+}
+
+/* ---------------- RISK TEST ---------------- */
+function riskLevelFor(score, max){
+  const ratio = score/max;
+  if(ratio >= 0.7) return 'low';
+  if(ratio >= 0.4) return 'medium';
+  return 'high';
+}
+const RISK_LEVEL_LABEL = {low:'Düşük risk', medium:'Orta risk', high:'Yüksek risk'};
+
+function renderRiskPage(){
+  renderRiskIntroAndQuiz();
+}
+
+function renderRiskIntroAndQuiz(){
+  const area = document.getElementById('riskArea');
+  area.innerHTML = ''
+    + '<div class="risk-intro"><p>Dürüstçe cevapla — bu bir sınav değil, sadece nerede olduğunu görmen için bir ayna.</p></div>'
+    + RISK_QUESTIONS.map((q,qi)=>(
+      '<div class="q-block" data-rqi="'+qi+'">'
+        + '<p class="q-prompt">'+(qi+1)+'. '+q.q+'</p>'
+        + '<div class="q-options">'
+          + q.options.map((opt,oi)=>(
+            '<label class="q-option" data-oi="'+oi+'">'
+            + '<input type="radio" name="rq'+qi+'" value="'+oi+'"> <span>'+opt.t+'</span>'
+            + '</label>'
+          )).join('')
+        + '</div>'
+      + '</div>'
+    )).join('')
+    + '<div class="quiz-actions"><button class="btn" id="riskSubmitBtn">Sonucu Gör</button><span class="quiz-score" id="riskWarn"></span></div>';
+
+  document.getElementById('riskSubmitBtn').addEventListener('click', computeRisk);
+}
+
+function computeRisk(){
+  let total = 0;
+  let allAnswered = true;
+  const weakModuleIds = [];
+  RISK_QUESTIONS.forEach((q,qi)=>{
+    const block = document.querySelector('.q-block[data-rqi="'+qi+'"]');
+    const checked = block.querySelector('input[name="rq'+qi+'"]:checked');
+    if(!checked){ allAnswered = false; return; }
+    const oi = parseInt(checked.value,10);
+    const pts = q.options[oi].p;
+    total += pts;
+    if(pts<=1 && weakModuleIds.indexOf(q.module)===-1) weakModuleIds.push(q.module);
+  });
+  if(!allAnswered){
+    document.getElementById('riskWarn').textContent = 'Lütfen tüm soruları işaretle.';
+    return;
+  }
+  const max = RISK_QUESTIONS.length*3;
+  const level = riskLevelFor(total, max);
+  saveRiskResult({score:total, max:max, level:level, weak:weakModuleIds, date:Date.now()});
+  updateFooter();
+  renderRiskResult(total, max, level, weakModuleIds);
+}
+
+function renderRiskResult(score, max, level, weakModuleIds){
+  const area = document.getElementById('riskArea');
+  const pct = Math.round(score/max*100);
+  const summaryText = level==='low'
+    ? 'Genel olarak sağlam dijital alışkanlıklara sahipsin. Yine de zayıf kalan alanları tazelemek iyi olur.'
+    : level==='medium'
+    ? 'Bazı iyi alışkanlıkların var, ama birkaç alanda risk taşıyorsun. Aşağıdaki modüllerle bu boşlukları kapatabilirsin.'
+    : 'Şu an bazı temel alışkanlıklarda ciddi risk taşıyorsun. İyi haber: aşağıdaki modüllerle bunu hızla değiştirebilirsin.';
+  const weakModules = MODULES.filter(m=>weakModuleIds.includes(m.id));
+  area.innerHTML = ''
+    + '<div class="risk-result">'
+      + '<div class="risk-result-head"><span class="risk-score">'+score+' / '+max+'</span><span class="risk-level-tag '+level+'">'+RISK_LEVEL_LABEL[level]+'</span></div>'
+      + '<div class="risk-gauge-track"><div class="risk-gauge-fill '+level+'" style="width:'+pct+'%;"></div></div>'
+      + '<p class="summary">'+summaryText+'</p>'
+      + (weakModules.length
+          ? '<p class="weak-list-head">Sana özel önerilen modüller</p>'
+            + '<div class="path" style="position:relative;">'
+              + weakModules.map(m=>(
+                '<div class="path-item card" data-open="'+m.id+'" style="margin-bottom:12px;">'
+                  + '<div class="card-main">'+icon(m.icon)+'<div><h3>'+m.title+'</h3><p>'+m.summary+'</p></div></div>'
+                  + '<button class="open-btn" data-open="'+m.id+'">Aç</button>'
+                + '</div>'
+              )).join('')
+            + '</div>'
+          : '<p class="weak-list-head">Belirgin bir zayıf alan görünmüyor — tebrikler!</p>')
+      + '<div class="risk-actions"><button class="btn secondary" id="retakeRiskBtn">Testi tekrar al</button></div>'
+    + '</div>';
+  area.querySelectorAll('[data-open]').forEach(node=>{
+    node.addEventListener('click', ()=>openModule(node.dataset.open));
+  });
+  document.getElementById('retakeRiskBtn').addEventListener('click', renderRiskIntroAndQuiz);
+}
+
+function updateFooter(){
+  document.getElementById('footerProgress').textContent = completedCount()+' / '+MODULES.length+' modül tamam';
+}
+
+/* ---------------- INIT ---------------- */
+renderModuleList();
+updateFooter();
+</script>
+</body>
+</html>
